@@ -1,12 +1,14 @@
-
-{ pkgs ? import <nixpkgs> {} }:
+{ pkgs, ... }:
 
 let
   claude = pkgs.stdenv.mkDerivation {
     pname = "claude-cli";
-    version = "1.0.0";
+    version = "1.0";
 
-    src = ./install.sh;
+    src = pkgs.fetchurl {
+      url = "https://example.com/install.sh";
+      sha256 = "REAL_HASH";
+    };
 
     nativeBuildInputs = [
       pkgs.bash
@@ -19,11 +21,9 @@ let
     installPhase = ''
       export HOME=$TMPDIR
       mkdir -p $out/bin
-
       bash $src --prefix=$out
     '';
   };
-in
-pkgs.mkShell {
-  buildInputs = [ claude ];
+in {
+  home.packages = [ claude ];
 }
